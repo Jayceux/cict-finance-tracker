@@ -1,0 +1,61 @@
+{
+  "name": "se-2",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/hardhat",
+      "packages/nextjs"
+    ]
+  },
+  "scripts": {
+    "account": "pnpm run hardhat:account",
+    "account:import": "pnpm --filter @se-2/hardhat run account:import",
+    "account:generate": "pnpm --filter @se-2/hardhat run account:generate",
+    "account:reveal-pk": "pnpm --filter @se-2/hardhat run account:reveal-pk",
+    "chain": "pnpm run hardhat:chain",
+    "compile": "pnpm run hardhat:compile",
+    "deploy": "pnpm run hardhat:deploy",
+    "fork": "pnpm run hardhat:fork",
+    "format": "pnpm run next:format && pnpm run hardhat:format",
+    "generate": "pnpm run account:generate",
+    "hardhat:account": "pnpm --filter @se-2/hardhat run account",
+    "hardhat:chain": "pnpm --filter @se-2/hardhat run chain",
+    "hardhat:check-types": "pnpm --filter @se-2/hardhat run check-types",
+    "hardhat:clean": "pnpm --filter @se-2/hardhat run clean",
+    "hardhat:compile": "pnpm --filter @se-2/hardhat run compile",
+    "hardhat:deploy": "pnpm --filter @se-2/hardhat run deploy",
+    "hardhat:flatten": "pnpm --filter @se-2/hardhat run flatten",
+    "hardhat:fork": "pnpm --filter @se-2/hardhat run fork",
+    "hardhat:format": "pnpm --filter @se-2/hardhat run format",
+    "hardhat:generate": "pnpm --filter @se-2/hardhat run generate",
+    "hardhat:hardhat-verify": "pnpm --filter @se-2/hardhat run hardhat-verify",
+    "hardhat:lint": "pnpm --filter @se-2/hardhat run lint",
+    "hardhat:lint-staged": "pnpm --filter @se-2/hardhat run lint-staged",
+    "hardhat:test": "pnpm --filter @se-2/hardhat run test",
+    "hardhat:verify": "pnpm --filter @se-2/hardhat run verify",
+    "lint": "pnpm run next:lint && pnpm run hardhat:lint",
+    "next:build": "pnpm --filter @se-2/nextjs run build",
+    "next:check-types": "pnpm --filter @se-2/nextjs run check-types",
+    "next:format": "pnpm --filter @se-2/nextjs run format",
+    "next:lint": "pnpm --filter @se-2/nextjs run lint",
+    "next:serve": "pnpm --filter @se-2/nextjs run serve",
+    "postinstall": "husky",
+    "precommit": "lint-staged",
+    "start": "pnpm --filter @se-2/nextjs run dev",
+    "test": "pnpm run hardhat:test",
+    "vercel": "pnpm --filter @se-2/nextjs run vercel",
+    "vercel:yolo": "pnpm --filter @se-2/nextjs run vercel:yolo",
+    "ipfs": "pnpm --filter @se-2/nextjs run ipfs",
+    "vercel:login": "pnpm --filter @se-2/nextjs run vercel:login",
+    "verify": "pnpm run hardhat:verify"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
+  },
+  "engines": {
+    "node": ">=20.18.3"
+  }
+}
