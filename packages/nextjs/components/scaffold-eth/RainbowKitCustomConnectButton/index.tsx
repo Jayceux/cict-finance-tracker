@@ -7,7 +7,7 @@ import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { RevealBurnerPKModal } from "./RevealBurnerPKModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Address } from "viem";
+import type { Address } from "viem";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
@@ -26,6 +26,8 @@ export const RainbowKitCustomConnectButton = () => {
         const blockExplorerAddressLink = account
           ? getBlockExplorerAddressLink(targetNetwork, account.address)
           : undefined;
+
+        // quick-login removed: only show regular connect UI
 
         return (
           <>

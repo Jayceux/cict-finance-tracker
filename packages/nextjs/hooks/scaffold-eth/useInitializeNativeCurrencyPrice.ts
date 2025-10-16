@@ -22,10 +22,23 @@ export const useInitializeNativeCurrencyPrice = () => {
     setIsNativeCurrencyFetching(false);
   }, [setIsNativeCurrencyFetching, setNativeCurrencyPrice, targetNetwork]);
 
+  const setNativeCurrencyPricePhp = useGlobalState(state => state.setNativeCurrencyPricePhp);
+  const fetchPhpRate = useCallback(async () => {
+    try {
+      const res = await fetch("/api/price");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data?.ethToPhp) setNativeCurrencyPricePhp(data.ethToPhp);
+    } catch {
+      // ignore
+    }
+  }, [setNativeCurrencyPricePhp]);
+
   // Get the price of ETH from Uniswap on mount
   useEffect(() => {
     fetchPrice();
-  }, [fetchPrice]);
+    fetchPhpRate();
+  }, [fetchPrice, fetchPhpRate]);
 
   // Get the price of ETH from Uniswap at a given interval
   useInterval(fetchPrice, enablePolling ? scaffoldConfig.pollingInterval : null);

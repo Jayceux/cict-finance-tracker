@@ -20,7 +20,7 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
               <th className="bg-primary">Time Mined</th>
               <th className="bg-primary">From</th>
               <th className="bg-primary">To</th>
-              <th className="bg-primary text-end">Value ({targetNetwork.nativeCurrency.symbol})</th>
+              <th className="bg-primary text-end">Amount ({targetNetwork.nativeCurrency.symbol})</th>
             </tr>
           </thead>
           <tbody>
@@ -29,6 +29,29 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
                 const receipt = transactionReceipts[tx.hash];
                 const timeMined = new Date(Number(block.timestamp) * 1000).toLocaleString();
                 const functionCalled = tx.input.substring(0, 10);
+                const findAmountIndex = (names?: string[]) => {
+                  if (!names) return -1;
+                  return names.findIndex(n => {
+                    const lower = n.toLowerCase();
+                    return lower.includes("amount") || lower === "value" || lower === "wei" || lower === "_value";
+                  });
+                };
+
+                const idxAmount = findAmountIndex(tx.functionArgNames);
+                let semanticAmount: bigint | null = null;
+                if (idxAmount >= 0 && tx.functionArgs) {
+                  const raw = tx.functionArgs[idxAmount];
+                  try {
+                    if (typeof raw === "bigint") semanticAmount = raw as bigint;
+                    else if (typeof raw === "number") semanticAmount = BigInt(raw);
+                    else if (typeof raw === "string") semanticAmount = BigInt(raw);
+                    else if (raw && typeof raw.toString === "function") semanticAmount = BigInt(raw.toString());
+                  } catch {
+                    semanticAmount = null;
+                  }
+                }
+
+                const amountToDisplay = semanticAmount ?? (tx.value ? (tx.value as bigint) : null);
 
                 return (
                   <tr key={tx.hash} className="hover text-sm">
@@ -57,7 +80,7 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
                       )}
                     </td>
                     <td className="text-right md:py-4">
-                      {formatEther(tx.value)} {targetNetwork.nativeCurrency.symbol}
+                      {amountToDisplay ? `${formatEther(amountToDisplay)} ${targetNetwork.nativeCurrency.symbol}` : "-"}
                     </td>
                   </tr>
                 );

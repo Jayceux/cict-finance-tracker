@@ -1,7 +1,7 @@
 "use client";
 
+import { useState } from "react";
 import { Address, formatEther } from "viem";
-import { useDisplayUsdMode } from "~~/hooks/scaffold-eth/useDisplayUsdMode";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useWatchBalance } from "~~/hooks/scaffold-eth/useWatchBalance";
 import { useGlobalState } from "~~/services/store/store";
@@ -28,7 +28,11 @@ export const Balance = ({ address, className = "", usdMode }: BalanceProps) => {
     address,
   });
 
-  const { displayUsdMode, toggleDisplayUsdMode } = useDisplayUsdMode({ defaultUsdMode: usdMode });
+  // displayMode: 0 = token, 1 = fiat (nativeCurrency.price), 2 = PHP (via global store)
+  const [displayMode, setDisplayMode] = useState<number>(usdMode ? 1 : 0);
+  const ethToPhp = useGlobalState(state => state.nativeCurrency.pricePhp);
+
+  const toggleDisplay = () => setDisplayMode(m => (m + 1) % 3);
 
   if (!address || isLoading || balance === null || (isNativeCurrencyPriceFetching && nativeCurrencyPrice === 0)) {
     return (
@@ -51,22 +55,45 @@ export const Balance = ({ address, className = "", usdMode }: BalanceProps) => {
 
   const formattedBalance = balance ? Number(formatEther(balance.value)) : 0;
 
+  const phpDisplay = () => {
+    if (!ethToPhp || ethToPhp === 0) return "N/A";
+    return (formattedBalance * ethToPhp).toLocaleString("en-PH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
   return (
     <button
       className={`btn btn-sm btn-ghost flex flex-col font-normal items-center hover:bg-transparent ${className}`}
-      onClick={toggleDisplayUsdMode}
+      onClick={toggleDisplay}
       type="button"
     >
       <div className="w-full flex items-center justify-center">
-        {displayUsdMode ? (
+        {displayMode === 0 && (
+          <>
+            <span>
+              {formattedBalance.toLocaleString("en-US", {
+                maximumFractionDigits: 4,
+              })}
+            </span>
+            <span className="text-[0.8em] font-bold ml-1">{targetNetwork.nativeCurrency.symbol}</span>
+          </>
+        )}
+        {displayMode === 1 && (
           <>
             <span className="text-[0.8em] font-bold mr-1">$</span>
-            <span>{(formattedBalance * nativeCurrencyPrice).toFixed(2)}</span>
+            <span>
+              {(formattedBalance * nativeCurrencyPrice).toLocaleString("en-US", {
+                maximumFractionDigits: 2,
+              })}
+            </span>
           </>
-        ) : (
+        )}
+        {displayMode === 2 && (
           <>
-            <span>{formattedBalance.toFixed(4)}</span>
-            <span className="text-[0.8em] font-bold ml-1">{targetNetwork.nativeCurrency.symbol}</span>
+            <span className="text-[0.8em] font-bold mr-1">₱</span>
+            <span>{phpDisplay()}</span>
           </>
         )}
       </div>
